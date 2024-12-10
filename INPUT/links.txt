@@ -1,0 +1,8 @@
+filmtv_movies.csv
+https://www.kaggle.com/datasets/stefanoleone992/filmtv-movies-dataset/data
+
+rotten_tomatoes_critic_reviews.csv
+https://www.kaggle.com/datasets/stefanoleone992/rotten-tomatoes-movies-and-critic-reviews-dataset/data
+
+scraped_titles.csv
+scrapped from rottentomatoes
