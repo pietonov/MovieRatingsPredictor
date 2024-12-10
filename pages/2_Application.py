@@ -77,11 +77,11 @@ with st.form("movie_form"):
 # Display user inputs and make prediction only after submission
 if submit_button:
     if not selected_actors:
-        selected_actors = ['unknown']
-        st.info("No actors selected. Set to 'unknown'.")
+        selected_actors = ['Unknown']
+        st.info("No actors selected. Set to 'Unknown'.")
     if not selected_directors:
-        selected_directors = ['unknown']
-        st.info("No directors selected. Set to 'unknown'.")
+        selected_directors = ['Unknown']
+        st.info("No directors selected. Set to 'Unknown'.")
 
     # Calculate average statistics for selected actors and directors
     avg_actor_score = actor_stats[actor_stats['actors_list'].isin(selected_actors)]['avg_critics_vote'].mean()
