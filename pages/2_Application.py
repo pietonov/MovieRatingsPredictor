@@ -53,22 +53,29 @@ def determine_tomato_status(rating):
 # Load data and models
 glm_full, actor_stats, director_stats, actors_list, directors_list = load_data_and_models()
 
+
 ######################### GLM Model #########################
 st.write("### Input Features")
+
+# Check session state for default values
+if "selected_actors" not in st.session_state:
+    st.session_state.selected_actors = None
+if "selected_directors" not in st.session_state:
+    st.session_state.selected_directors = None
 
 with st.form("movie_form"):
     # Select actors
     selected_actors = st.multiselect(
         "Select Actors",
         options=actors_list,
-        default=None
+        default=st.session_state.selected_actors
     )
 
     # Select directors
     selected_directors = st.multiselect(
         "Select Directors",
         options=directors_list,
-        default=None
+        default=st.session_state.selected_directors
     )
 
     # Submit button for the form
@@ -77,11 +84,14 @@ with st.form("movie_form"):
 # Display user inputs and make prediction only after submission
 if submit_button:
     if not selected_actors:
-        selected_actors = ['unknown']
+        st.session_state.selected_actors = ['unknown']
         st.info("No actors selected. Defaulting to 'unknown'.")
+        st.experimental_rerun()
+
     if not selected_directors:
-        selected_directors = ['unknown']
+        st.session_state.selected_directors = ['unknown']
         st.info("No directors selected. Defaulting to 'unknown'.")
+        st.experimental_rerun()
 
     # Calculate average statistics for selected actors and directors
     avg_actor_score = actor_stats[actor_stats['actors_list'].isin(selected_actors)]['avg_critics_vote'].mean()
