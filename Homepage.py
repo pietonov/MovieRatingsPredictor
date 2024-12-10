@@ -33,3 +33,11 @@ glm_full = load_models()
 
 
 
+######################### Sidebar Navigation ##################
+# Contact Information
+st.sidebar.title("Contact & Support")
+st.sidebar.markdown("""
+For professional inquiries or feedback:  
+- **Email**: support@movieratingspredictor.com  
+- **Phone**: +1 (555) 987-6543   
+""")
