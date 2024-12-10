@@ -4,10 +4,7 @@ import joblib
 import pandas as pd
 
 # Header Section
-st.title("Ground Time Predictor")
-
-
-
+st.title("Movie Ratings Predictor")
 
 
 ######################### Load Models #########################
@@ -31,29 +28,35 @@ director_stats = pd.read_csv('OUTPUT/director_stats.csv')
 actors_list = actor_stats['actors_list'].unique().tolist()
 directors_list = director_stats['directors_list'].unique().tolist()
 
+
+
 ######################### GLM Model #########################
-st.title("Movie Ratings Predictor")
 
-st.sidebar.header("Input Features")
+st.write("### Input Features")
 
-# Select actors
-selected_actors = st.write.multiselect(
-    "Select Actors",
-    options=actors_list,
-    default=None
-)
+with st.form("movie_form"):
+    # Select actors
+    selected_actors = st.multiselect(
+        "Select Actors",
+        options=actors_list,
+        default=None
+    )
 
-# Select directors
-selected_directors = st.write.multiselect(
-    "Select Directors",
-    options=directors_list,
-    default=None
-)
+    # Select directors
+    selected_directors = st.multiselect(
+        "Select Directors",
+        options=directors_list,
+        default=None
+    )
 
-# Display user inputs
-st.write("Selected Actors:", selected_actors)
-st.write("Selected Directors:", selected_directors)
+    # Submit button for the form
+    submit_button = st.form_submit_button(label="Submit")
 
+
+# Display user inputs only after submission
+if submit_button:
+    st.write("Selected Actors:", selected_actors)
+    st.write("Selected Directors:", selected_directors)
 
 # # User Input Form
 # with st.form("prediction_form"):
