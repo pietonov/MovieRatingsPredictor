@@ -31,6 +31,16 @@ def load_data_and_models():
     return glm_model, actor_stats, director_stats, actors_list, directors_list
 
 
+# Define Certified Fresh, Fresh, and Rotten
+def determine_tomato_status(rating):
+    if rating >= 8:
+        return 'Certified Fresh'
+    elif rating >= 6:
+        return 'Fresh'
+    else:
+        return 'Rotten'
+
+
 # Load data and models
 glm_full, actor_stats, director_stats, actors_list, directors_list = load_data_and_models()
 
@@ -75,7 +85,9 @@ if submit_button:
 
     # Make prediction
     try:
-        predicted_rating = glm_full.predict(input_data)
-        st.write(f"### Predicted Movie Rating: {predicted_rating[0]:.2f}")
+        predicted_rating = glm_full.predict(input_data)[0]
+        tomato_status = determine_tomato_status(predicted_rating)
+        st.write(f"### Predicted Movie Rating: {predicted_rating:.2f}")
+        st.write(f"### Tomato Status: {tomato_status}")
     except Exception as e:
         st.error(f"Error making prediction: {e}")
