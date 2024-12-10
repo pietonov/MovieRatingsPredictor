@@ -29,9 +29,7 @@ actors_list = actor_stats['actors_list'].unique().tolist()
 directors_list = director_stats['directors_list'].unique().tolist()
 
 
-
 ######################### GLM Model #########################
-
 st.write("### Input Features")
 
 with st.form("movie_form"):
@@ -58,31 +56,24 @@ if submit_button:
     st.write("Selected Actors:", selected_actors)
     st.write("Selected Directors:", selected_directors)
 
-# # User Input Form
-# with st.form("prediction_form"):
-#     st.header("Input Flight Details")
-#     distance = st.number_input("Distance (miles):", min_value=0, value=500)
-#     large_airport = st.selectbox("Large Airport:", [1, 0], format_func=lambda x: "Yes" if x else "No")
-#     has_passengers = st.selectbox("Has Passengers:", [1, 0], format_func=lambda x: "Yes" if x else "No")
-#     passengers = st.number_input("Number of Passengers:", min_value=0, value=150, disabled=not has_passengers)
-#     is_winter = st.selectbox("Winter Season:", [1, 0], format_func=lambda x: "Yes" if x else "No")
-#     unique_carrier = st.selectbox("Carrier:", unique_carriers)
-#     submitted = st.form_submit_button("Predict")
+    # Calculate average statistics for selected actors and directors
+    avg_actor_score = actor_stats[actor_stats['actors_list'].isin(selected_actors)]['avg_critics_vote'].mean()
+    avg_director_score = director_stats[director_stats['directors_list'].isin(selected_directors)]['avg_critics_vote'].mean()
 
-# if submitted:
-#     input_data = {
-#         'DISTANCE': [distance],
-#         'LARGE_AIRPORT': [large_airport],
-#         'HAS_PASSENGERS': [has_passengers],
-#         'PASSENGERS': [0 if not has_passengers else passengers],
-#         'IS_WINTER': [is_winter],
-#         'UNIQUE_CARRIER': [unique_carrier]
-#     }
-#     input_df = pd.DataFrame(input_data)
+    # Handle cases where no actors or directors are selected
+    if pd.isna(avg_actor_score):
+        avg_actor_score = actor_stats['avg_critics_vote'].mean()
+    if pd.isna(avg_director_score):
+        avg_director_score = director_stats['avg_critics_vote'].mean()
 
-#     try:
-#         glm_pred = glm_full.predict(input_df)
-#         st.success(f"GLM Predicted Ground Time: {glm_pred.iloc[0]:.2f} minutes")
-#     except Exception as e:
-#         st.error(f"Error during GLM prediction: {e}")
+    # Prepare input data for the model
+    input_data = pd.DataFrame({
+        'actor_avg_critics_vote': [avg_actor_score],
+        'director_avg_critics_vote': [avg_director_score]
+    })
 
+    # Make prediction
+    predicted_rating = glm_full.predict(input_data)
+
+    # Display the prediction
+    st.write(f"### Predicted Movie Rating: {predicted_rating[0]:.2f}")
