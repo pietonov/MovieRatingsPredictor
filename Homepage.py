@@ -21,7 +21,7 @@ def load_models():
         raise
     return glm_model
 
-glm_full, rf = load_models()
+glm_full = load_models()
 
 
 
