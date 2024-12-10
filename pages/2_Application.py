@@ -6,6 +6,15 @@ import pandas as pd
 # Header Section
 st.title("Movie Ratings Predictor")
 
+######################### Sidebar Navigation ##################
+# Contact Information
+st.sidebar.title("Contact & Support")
+st.sidebar.markdown("""
+For professional inquiries or feedback:  
+- **Email**: support@movieratingspredictor.com  
+- **Phone**: +1 (555) 987-6543   
+""")
+
 ######################### Load and Cache Data #########################
 @st.cache_resource
 def load_data_and_models():
