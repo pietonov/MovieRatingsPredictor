@@ -6,28 +6,28 @@ import pandas as pd
 # Header Section
 st.title("Movie Ratings Predictor")
 
-
 ######################### Load Models #########################
 @st.cache_resource
 def load_models():
     try:
         glm_path = 'OUTPUT/glm_model.pkl'
         if not os.path.exists(glm_path):
-            raise FileNotFoundError("Model files not found.")
+            raise FileNotFoundError("Model file not found.")
         glm_model = joblib.load(glm_path)
     except Exception as e:
-        st.error(f"Error loading models: {e}")
+        st.error(f"Error loading model: {e}")
         raise
     return glm_model
 
 glm_full = load_models()
 
+# Load actor and director statistics
 actor_stats = pd.read_csv('OUTPUT/actor_stats.csv')
 director_stats = pd.read_csv('OUTPUT/director_stats.csv')
 
+# Extract unique actor and director names
 actors_list = actor_stats['actors_list'].unique().tolist()
 directors_list = director_stats['directors_list'].unique().tolist()
-
 
 ######################### GLM Model #########################
 st.write("### Input Features")
@@ -50,12 +50,8 @@ with st.form("movie_form"):
     # Submit button for the form
     submit_button = st.form_submit_button(label="Submit")
 
-
-# Display user inputs only after submission
+# Display user inputs and make prediction only after submission
 if submit_button:
-    st.write("Selected Actors:", selected_actors)
-    st.write("Selected Directors:", selected_directors)
-
     # Calculate average statistics for selected actors and directors
     avg_actor_score = actor_stats[actor_stats['actors_list'].isin(selected_actors)]['avg_critics_vote'].mean()
     avg_director_score = director_stats[director_stats['directors_list'].isin(selected_directors)]['avg_critics_vote'].mean()
@@ -73,7 +69,8 @@ if submit_button:
     })
 
     # Make prediction
-    predicted_rating = glm_full.predict(input_data)
-
-    # Display the prediction
-    st.write(f"### Predicted Movie Rating: {predicted_rating[0]:.2f}")
+    try:
+        predicted_rating = glm_full.predict(input_data)
+        st.write(f"### Predicted Movie Rating: {predicted_rating[0]:.2f}")
+    except Exception as e:
+        st.error(f"Error making prediction: {e}")
