@@ -9,11 +9,11 @@ st.set_page_config(page_title="Movie Ratings Predictor")
 
 # Header Section
 st.title("Movie Ratings Predictor")
-# st.image(
-#     "DATA/GroundTimePredictor.png", 
-#     caption="AI-generated: Streamlining Ground Operations for Better Efficiency", 
-#     width=800
-# )
+st.image(
+    "INPUT/MovieRatingsPredictor.jpg", 
+    caption="AI-generated: Predicting Movies Ratings before You Watched It", 
+    width=800
+)
 
 
 ######################### Load Models #########################
