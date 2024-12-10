@@ -6,28 +6,33 @@ import pandas as pd
 # Header Section
 st.title("Movie Ratings Predictor")
 
-######################### Load Models #########################
+######################### Load and Cache Data #########################
 @st.cache_resource
-def load_models():
+def load_data_and_models():
     try:
+        # Load GLM model
         glm_path = 'OUTPUT/glm_model.pkl'
         if not os.path.exists(glm_path):
             raise FileNotFoundError("Model file not found.")
         glm_model = joblib.load(glm_path)
+
+        # Load actor and director statistics
+        actor_stats = pd.read_csv('OUTPUT/actor_stats.csv')
+        director_stats = pd.read_csv('OUTPUT/director_stats.csv')
+
+        # Sort actors and directors by name
+        actors_list = sorted(actor_stats['actors_list'].unique().tolist())
+        directors_list = sorted(director_stats['directors_list'].unique().tolist())
+
     except Exception as e:
-        st.error(f"Error loading model: {e}")
+        st.error(f"Error loading data or models: {e}")
         raise
-    return glm_model
 
-glm_full = load_models()
+    return glm_model, actor_stats, director_stats, actors_list, directors_list
 
-# Load actor and director statistics
-actor_stats = pd.read_csv('OUTPUT/actor_stats.csv')
-director_stats = pd.read_csv('OUTPUT/director_stats.csv')
 
-# Extract unique actor and director names
-actors_list = actor_stats['actors_list'].unique().tolist()
-directors_list = director_stats['directors_list'].unique().tolist()
+# Load data and models
+glm_full, actor_stats, director_stats, actors_list, directors_list = load_data_and_models()
 
 ######################### GLM Model #########################
 st.write("### Input Features")
