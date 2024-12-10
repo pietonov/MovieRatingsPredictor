@@ -37,14 +37,14 @@ st.title("Movie Ratings Predictor")
 st.sidebar.header("Input Features")
 
 # Select actors
-selected_actors = st.sidebar.multiselect(
+selected_actors = st.write.multiselect(
     "Select Actors",
     options=actors_list,
     default=None
 )
 
 # Select directors
-selected_directors = st.sidebar.multiselect(
+selected_directors = st.write.multiselect(
     "Select Directors",
     options=directors_list,
     default=None
