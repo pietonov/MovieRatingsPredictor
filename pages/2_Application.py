@@ -29,6 +29,14 @@ def load_data_and_models():
         actor_stats = pd.read_csv('OUTPUT/actor_stats.csv')
         director_stats = pd.read_csv('OUTPUT/director_stats.csv')
 
+        # Add "Unknown" to actor and director lists if not present
+        if 'unknown' not in actor_stats['actors_list'].values:
+            unknown_actor_row = {'actors_list': 'unknown', 'avg_critics_vote': actor_stats['avg_critics_vote'].mean()}
+            actor_stats = pd.concat([actor_stats, pd.DataFrame([unknown_actor_row])], ignore_index=True)
+        if 'unknown' not in director_stats['directors_list'].values:
+            unknown_director_row = {'directors_list': 'unknown', 'avg_critics_vote': director_stats['avg_critics_vote'].mean()}
+            director_stats = pd.concat([director_stats, pd.DataFrame([unknown_director_row])], ignore_index=True)
+
         # Sort actors and directors by name
         actors_list = sorted(actor_stats['actors_list'].unique().tolist())
         directors_list = sorted(director_stats['directors_list'].unique().tolist())
@@ -59,14 +67,14 @@ st.write("### Input Features")
 with st.form("movie_form"):
     # Select actors
     selected_actors = st.multiselect(
-        "Select Actors",
+        "Select Actors (leave empty for 'Unknown')",
         options=actors_list,
         default=None
     )
 
     # Select directors
     selected_directors = st.multiselect(
-        "Select Directors",
+        "Select Directors (leave empty for 'Unknown')",
         options=directors_list,
         default=None
     )
@@ -76,33 +84,27 @@ with st.form("movie_form"):
 
 # Display user inputs and make prediction only after submission
 if submit_button:
-    # Check if anything is selected
-    if not selected_actors and not selected_directors:
-        st.warning("No actors or directors selected. The rating will be 'unknown.'")
-        st.write("### Predicted Movie Rating: Unknown")
-        st.write("### Tomato Status: Unknown")
-    else:
-        # Calculate average statistics for selected actors and directors
-        avg_actor_score = actor_stats[actor_stats['actors_list'].isin(selected_actors)]['avg_critics_vote'].mean()
-        avg_director_score = director_stats[director_stats['directors_list'].isin(selected_directors)]['avg_critics_vote'].mean()
+    # Add "unknown" if no actors or directors are selected
+    if not selected_actors:
+        selected_actors = ['unknown']
+    if not selected_directors:
+        selected_directors = ['unknown']
 
-        # Handle cases where no actors or directors are selected
-        if pd.isna(avg_actor_score):
-            avg_actor_score = actor_stats['avg_critics_vote'].mean()
-        if pd.isna(avg_director_score):
-            avg_director_score = director_stats['avg_critics_vote'].mean()
+    # Calculate average statistics for selected actors and directors
+    avg_actor_score = actor_stats[actor_stats['actors_list'].isin(selected_actors)]['avg_critics_vote'].mean()
+    avg_director_score = director_stats[director_stats['directors_list'].isin(selected_directors)]['avg_critics_vote'].mean()
 
-        # Prepare input data for the model
-        input_data = pd.DataFrame({
-            'actor_avg_critics_vote': [avg_actor_score],
-            'director_avg_critics_vote': [avg_director_score]
-        })
+    # Prepare input data for the model
+    input_data = pd.DataFrame({
+        'actor_avg_critics_vote': [avg_actor_score],
+        'director_avg_critics_vote': [avg_director_score]
+    })
 
-        # Make prediction
-        try:
-            predicted_rating = glm_full.predict(input_data)[0]
-            tomato_status = determine_tomato_status(predicted_rating)
-            st.write(f"### Predicted Movie Rating: {predicted_rating:.2f}")
-            st.write(f"### Tomato Status: {tomato_status}")
-        except Exception as e:
-            st.error(f"Error making prediction: {e}")
+    # Make prediction
+    try:
+        predicted_rating = glm_full.predict(input_data)[0]
+        tomato_status = determine_tomato_status(predicted_rating)
+        st.write(f"### Predicted Movie Rating: {predicted_rating:.2f}")
+        st.write(f"### Tomato Status: {tomato_status}")
+    except Exception as e:
+        st.error(f"Error making prediction: {e}")
